@@ -21,44 +21,15 @@
 
 ## Настройка формы заказа
 
-В конце `index.html` есть две константы:
+Заявки уходят в Firebase Realtime Database (проект `akfa-nukus`), откуда их читает панель
+менеджера на отдельном домене — проект `akfa-manager`. Контакты (телефон, Telegram) страница
+тоже берёт из базы: менеджер меняет их в панели, деплой не нужен.
 
-```js
-const ENDPOINT = 'ВСТАВЬТЕ_АДРЕС_ОБРАБОТЧИКА';
-const CHAT_ID  = '7713592368';
-```
+Настраивать уже нечего — `firebaseConfig` вставлен в `<script type="module">`, правила залиты.
+Ключ публичный по замыслу Firebase: доступ ограничивают правила
+(`akfa-manager/database.rules.json`), а не он.
 
-**Не вставляйте в `ENDPOINT` адрес Telegram с токеном бота.** Исходный код страницы
-видит любой посетитель — токен уведут, и бот будет рассылать спам от вашего имени.
-
-Вместо этого поднимите обработчик, который хранит токен у себя. Бесплатный вариант —
-Cloudflare Worker (5 минут, карта не нужна):
-
-1. [dash.cloudflare.com](https://dash.cloudflare.com) → **Workers & Pages** → **Create Worker**.
-2. Вставьте код:
-
-```js
-export default {
-  async fetch(req, env) {
-    const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type' };
-    if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
-    if (req.method !== 'POST')    return new Response('nope', { status: 405, headers: cors });
-
-    const { text } = await req.json();
-    if (!text || text.length > 2000) return Response.json({ ok: false }, { status: 400, headers: cors });
-
-    const r = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: env.CHAT_ID, text, disable_web_page_preview: true })
-    });
-    return Response.json(await r.json(), { headers: cors });
-  }
-};
-```
-
-3. **Settings → Variables** → добавьте секреты `BOT_TOKEN` и `CHAT_ID`.
-4. Скопируйте адрес воркера (`https://…workers.dev`) в `ENDPOINT`.
+Домен сайта нужно добавить в Firebase → Authentication → Settings → **Authorized domains**.
 
 ## Публикация через GitHub Pages
 

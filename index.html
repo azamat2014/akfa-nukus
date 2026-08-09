@@ -6,7 +6,8 @@
 <title>Окна, Двери и Витражи Akfa</title>
 <meta name="description" content="Изготовление и установка пластиковых и алюминиевых окон, дверей, витражей и фасадов Akfa. Замер и расчёт бесплатно.">
 <meta name="theme-color" content="#0b3d91">
-<link rel="preconnect" href="https://api.telegram.org">
+<link rel="preconnect" href="https://www.gstatic.com">
+<link rel="preconnect" href="https://akfa-nukus-default-rtdb.asia-southeast1.firebasedatabase.app">
 <style>
 :root{
   --brand:#0b3d91; --brand-2:#1663d6; --accent:#e63946;
@@ -235,22 +236,22 @@ footer a:hover{text-decoration:underline}
         <p data-i18n="contacts_sub">Позвоните или напишите в Telegram — ответим и посчитаем стоимость.</p>
       </div>
       <div class="contacts">
-        <a class="contact" href="tel:+998913711420">
+        <a class="contact" href="tel:+998913711420" data-c="phone-link">
           <span class="ico ico-phone" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>
           </span>
           <span class="c-body">
             <b data-i18n="c_phone">Телефон</b>
-            <span dir="ltr">+998 91 371 14 20</span>
+            <span dir="ltr" data-c="phone-text">+998 91 371 14 20</span>
           </span>
         </a>
-        <a class="contact" href="https://t.me/emirlann1" target="_blank" rel="noopener">
+        <a class="contact" href="https://t.me/emirlann1" target="_blank" rel="noopener" data-c="tg-link">
           <span class="ico ico-tg" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M21.8 4.1 2.9 11.4c-1 .4-1 1.8.1 2.1l4.7 1.5 1.8 5.6c.3.9 1.4 1.1 2 .4l2.6-2.6 4.7 3.4c.7.5 1.7.1 1.9-.8l3-14.2c.2-1-.8-1.9-1.9-1.5zM9.6 14.7l8-5.4-6.5 6.3-.3 3.4-1.2-4.3z"/></svg>
           </span>
           <span class="c-body">
             <b>Telegram</b>
-            <span dir="ltr">@emirlann1</span>
+            <span dir="ltr" data-c="tg-text">@emirlann1</span>
           </span>
         </a>
       </div>
@@ -300,15 +301,31 @@ footer a:hover{text-decoration:underline}
 <footer>
   <div class="wrap">
     <p class="f-links">
-      <a href="tel:+998913711420" dir="ltr">+998 91 371 14 20</a>
+      <a href="tel:+998913711420" dir="ltr" data-c="phone-link"><span data-c="phone-text">+998 91 371 14 20</span></a>
       <span aria-hidden="true">·</span>
-      <a href="https://t.me/emirlann1" target="_blank" rel="noopener" dir="ltr">@emirlann1</a>
+      <a href="https://t.me/emirlann1" target="_blank" rel="noopener" dir="ltr" data-c="tg-link"><span data-c="tg-text">@emirlann1</span></a>
     </p>
     <p>© <span id="year"></span> Akfa — <span data-i18n="footer">окна, двери и витражи. Все права защищены.</span></p>
   </div>
 </footer>
 
-<script>
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js';
+import { getDatabase, ref, push, onValue, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js';
+
+/* Тот же конфиг, что и в akfa-manager. Публичный по замыслу Firebase — доступ ограничивают правила. */
+const firebaseConfig = {
+  apiKey: 'AIzaSyDKTHWUJH6-Dyr4AKWd13BpcZLmmFtw7bA',
+  authDomain: 'akfa-nukus.firebaseapp.com',
+  projectId: 'akfa-nukus',
+  databaseURL: 'https://akfa-nukus-default-rtdb.asia-southeast1.firebasedatabase.app',
+  storageBucket: 'akfa-nukus.firebasestorage.app',
+  messagingSenderId: '14479907142',
+  appId: '1:14479907142:web:f0e9f27209468da269ed47'
+};
+const db = getDatabase(initializeApp(firebaseConfig));
+
 /* ================= i18n ================= */
 const I18N = {
   ru:{
@@ -346,7 +363,6 @@ const I18N = {
     fail:'Не удалось отправить. Попробуйте ещё раз или позвоните нам.',
     privacy:'Нажимая кнопку, вы соглашаетесь на обработку персональных данных.',
     footer:'окна, двери и витражи. Все права защищены.',
-    tg_new:'НОВАЯ ЗАЯВКА С САЙТА', tg_name:'Имя', tg_phone:'Телефон', tg_comment:'Комментарий', tg_empty:'не указано'
   },
   uz:{
     title:'Akfa oynalari, eshiklari va vitrajlari',
@@ -383,7 +399,6 @@ const I18N = {
     fail:'Yuborib bo‘lmadi. Qayta urinib ko‘ring yoki qo‘ng‘iroq qiling.',
     privacy:'Tugmani bosish orqali shaxsiy ma’lumotlaringizni qayta ishlashga rozilik bildirasiz.',
     footer:'oyna, eshik va vitrajlar. Barcha huquqlar himoyalangan.',
-    tg_new:'SAYTDAN YANGI ARIZA', tg_name:'Ism', tg_phone:'Telefon', tg_comment:'Izoh', tg_empty:'ko‘rsatilmagan'
   }
 };
 
@@ -408,12 +423,24 @@ document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click
   applyLang();
 }));
 
-/* ================= форма ================= */
-// Адрес обработчика заявок. Подставьте свой — см. README.md.
-// НИКОГДА не вставляйте сюда токен бота: он виден всем в исходнике страницы.
-const ENDPOINT = 'ВСТАВЬТЕ_АДРЕС_ОБРАБОТЧИКА';
-const CHAT_ID  = '7713592368';
+/* ============ контакты из панели менеджера ============ */
+// Живая подписка: менеджер сохранил новый номер — на сайте он меняется без деплоя.
+onValue(ref(db, 'settings/contacts'), snap => {
+  const c = snap.val();
+  if (!c) return;
+  if (c.phone){
+    const tel = c.phone.replace(/[^\d+]/g, '');
+    document.querySelectorAll('[data-c="phone-link"]').forEach(a => a.href = 'tel:' + tel);
+    document.querySelectorAll('[data-c="phone-text"]').forEach(el => el.textContent = c.phone);
+  }
+  if (c.telegram){
+    const tg = c.telegram.replace(/^@/, '');
+    document.querySelectorAll('[data-c="tg-link"]').forEach(a => a.href = 'https://t.me/' + tg);
+    document.querySelectorAll('[data-c="tg-text"]').forEach(el => el.textContent = '@' + tg);
+  }
+}, err => console.error('contacts:', err));
 
+/* ================= форма ================= */
 const form   = document.getElementById('orderForm');
 const status = document.getElementById('status');
 const phone  = document.getElementById('phone');
@@ -451,25 +478,21 @@ form.addEventListener('submit', async e => {
   if (!validate()){ (document.querySelector('.invalid input')||name).focus(); return; }
 
   const btn = form.querySelector('.submit');
-  const text =
-    '🚨 ' + t('tg_new') + '\n\n' +
-    '👤 ' + t('tg_name')  + ': ' + name.value.trim() + '\n' +
-    '📞 ' + t('tg_phone') + ': ' + phone.value + '\n' +
-    '💬 ' + t('tg_comment') + ': ' + (form.comment.value.trim() || t('tg_empty'));
-
   btn.disabled = true;
   btn.textContent = t('btn_sending');
   status.className = 'status';
   status.textContent = '';
 
   try{
-    const r = await fetch(ENDPOINT, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ chat_id: CHAT_ID, text, disable_web_page_preview: true })
+    // Поля и статус должны совпадать с database.rules.json в akfa-manager.
+    await push(ref(db, 'orders'), {
+      name:    name.value.trim(),
+      phone:   phone.value.trim(),
+      comment: form.comment.value.trim(),
+      lang,
+      status:  'new',
+      createdAt: serverTimestamp()
     });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.description || 'send failed');
 
     form.reset();
     maskPhone();
@@ -478,7 +501,8 @@ form.addEventListener('submit', async e => {
   }catch(err){
     console.error(err);
     status.className = 'status err';
-    status.textContent = t('fail');
+    // ponytail: код ошибки прямо в форме — иначе причину видно только в консоли
+    status.textContent = t('fail') + ' [' + (err?.code || err?.message || err) + ']';
   }finally{
     btn.disabled = false;
     btn.textContent = t('btn_send');
